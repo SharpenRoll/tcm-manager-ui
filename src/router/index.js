@@ -3,6 +3,8 @@ import VueRouter from 'vue-router';
 
 import Home from '../pages/Home'
 import DrugInfo from "@/pages/DrugInfo";
+import PatientInfo from "@/pages/PatientInfo";
+import Prescription from "@/pages/Prescription";
 
 Vue.use(VueRouter);
 
@@ -44,11 +46,17 @@ const router = new VueRouter({
             children: [
                 {
                     path: '/biz/patient',
+                    component: PatientInfo,
                     name: '管理患者个人信息'
                 },
                 {
                     path: '/biz/case_history',
                     name: '管理病历档案'
+                },
+                {
+                    path: '/biz/prescription',
+                    component: Prescription,
+                    name: '处方单'
                 }
             ]
         }

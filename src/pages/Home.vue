@@ -10,7 +10,8 @@
             <!-- 侧边导航栏 -->
             <el-aside :width="'200px'" style="background-color: #425066" background-color="#425066">
                 <br>
-                <el-button icon="el-icon-circle-plus-outline" type="success" style="font-size:medium">新建处方单</el-button>
+                <el-button icon="el-icon-circle-plus-outline" @click="jump('/biz/prescription')"
+                           type="success" style="font-size:medium">新建处方单</el-button>
                 <el-menu menu-trigger="hover" width="100%"
                          background-color="#425066"
                          text-color="#fff"
