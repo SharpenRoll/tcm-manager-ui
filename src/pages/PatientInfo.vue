@@ -82,7 +82,7 @@
                             </el-main>
                             <el-footer>
                                 <el-button @click="showPrescriptionHistory(currentPatientInfo.id)">查看历史处方单</el-button>
-                                <el-button>开具新处方单</el-button>
+                                <el-button @click="jumpToNewPrescription(currentPatientInfo.id)">开具新处方单</el-button>
                             </el-footer>
                         </el-container>
                     </el-card>
@@ -144,7 +144,6 @@
                 })
             },
             getAge() {
-                console.log(this.currentPatientInfo.birth);
                 let birthdays = new Date(this.currentPatientInfo.birth.replace(/-/g, "/"));
                 let d = new Date();
                 this.currentPatientInfo.age = d.getFullYear() -
@@ -158,6 +157,12 @@
             showPrescriptionHistory(id) {
                 console.log(id);
                 this.prescriptionHistoryDialogOn = true;
+            },
+            jumpToNewPrescription(id) {
+                this.$router.push({
+                    path: '/biz/prescription',
+                    query: {patientId: id}
+                });
             }
         },
         mounted() {
