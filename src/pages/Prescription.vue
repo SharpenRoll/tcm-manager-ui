@@ -14,10 +14,7 @@
                         </el-button>
 
                         <el-dialog :visible.sync="patientInfoSelectDialogOn" title="选择/添加患者信息">
-                            <!--
-                            <el-input v-model="patientId"></el-input>
-                            <el-input v-model="patientInfoStr"></el-input>
-                            -->
+
                         </el-dialog>
                     </el-col>
                     <el-col :span="20">
@@ -42,19 +39,58 @@
 
             <el-container>
 
-                <el-aside style="padding-left: 20px">
+                <el-aside style="padding-left: 20px; width: 35%">
                     <span class="area-header-text">药品选择</span>
                     <el-divider></el-divider>
+
+                    <el-input v-model="queryDrugName" placeholder="根据药品名称查找" clearable>
+                        <el-button slot="append" icon="el-icon-search" @click="findDrugInfoByName"></el-button>
+                    </el-input>
+                    <br><br>
+
+                    <el-table :data="drugInfo" :height="tableHeight">
+                        <el-table-column label="编号" prop="id"></el-table-column>
+                        <el-table-column label="药品名" prop="name"></el-table-column>
+                        <el-table-column label="操作">
+                            <template slot-scope="scope">
+                                <el-popover placement="right" @show="selectedDrugAmount = 0">
+                                    <el-input-number v-model="selectedDrugAmount" placeholder="添加数量"></el-input-number>
+                                    <el-button type="primary" @click="addDrug(scope.row)">确定</el-button>
+                                    <el-button slot="reference">添加</el-button>
+                                </el-popover>
+                            </template>
+                        </el-table-column>
+                    </el-table>
+
                 </el-aside>
 
                 <el-main style="padding-top: 0">
                     <span class="area-header-text">处方内容</span>
                     <el-divider></el-divider>
+
+                    <div v-if="selectedDrugInfo.length > 0">
+                        <div v-for="(singleDrugInfo, index) in selectedDrugInfo" v-bind:key="index">
+                            <el-card>
+                                {{singleDrugInfo}}
+                            </el-card>
+                        </div>
+                    </div>
+
+                    <div v-else style="font-size:x-large; font-weight:bold; display:flex; height: 80%">
+                        <span style="margin:auto">点击左侧查询结果添加药品</span>
+                    </div>
                 </el-main>
 
             </el-container>
 
-            <el-footer>Footer</el-footer>
+            <el-footer style="height: 5%">
+                <div style="float: right">
+                    <el-button>保存</el-button>
+                    <el-button>保存并导出</el-button>
+                    <el-button>保存为模版</el-button>
+                </div>
+            </el-footer>
+
         </el-container>
 
     </section>
@@ -72,13 +108,17 @@
                 patientInfoSelectDialogOn: false,
                 prescriptionId: null,
                 prescriptionInfo: null,
-                patientInfoStr: null
+                patientInfoStr: null,
+                queryDrugName: '',
+                drugInfo: [],
+                tableHeight: window.innerHeight * 0.37,
+                selectedDrugInfo: [],
+                selectedDrugAmount: null
             }
         },
         watch: {
             async patientId() {
                 await this.queryPatientInfoById();
-                console.log("patient id changed");
                 this.patientInfoStr = JSON.stringify(this.patientInfo);
             }
         },
@@ -109,10 +149,26 @@
                         d.getDate() < birthdays.getDate())
                         ? 1
                         : 0);
+            },
+            async findDrugInfoByName() {
+                await API.queryDrugInfoByName({drugName: this.queryDrugName}).then(res => {
+                    this.drugInfo = res.data;
+                }).catch(err => {
+                    this.$message.error('获取药品信息失败：' + JSON.stringify(err));
+                })
+            },
+            addDrug(row) {
+                row.amount = this.selectedDrugAmount;
+                this.selectedDrugInfo.push(row);
             }
         },
         mounted() {
             this.init();
+            window.onresize = () => {
+                return (() => {
+                    this.tableHeight = window.innerHeight * 0.37;
+                })()
+            };
         }
     }
 </script>
